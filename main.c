@@ -54,14 +54,13 @@ int main(int argc, char *argv[]){
                 printf("image_height = %i\n",img_y);
                 printf("image components = %i\n",img_comp);
                 printf("RGB of first pixel: %i,%i,%i\n", data[0],data[1],data[2]);
+                stbi_write_png("out.png",img_x,img_y,img_comp,data,img_x*img_comp);
             }
 
             // there's a couple of options to encode the shex string. 
             // Either we do it per character (which will be messy on the decode end)
             // or we do it per byte (which means 2 characters at this end, but that shouldn't)
             // be too bad using %.2x
-
-            stbi_write_png("out.png",img_x,img_y,img_comp,data,img_x*img_comp);
         }
 
         else if (mode[0] == 'd'){
