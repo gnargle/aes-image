@@ -3,6 +3,6 @@ This is a C program that will AES-128 encode a string, and encode it into a PNG 
 
 To compile: gcc main.c aes.c encryption.c -lm
 
-To encrypt: ./a.out <string to encrypt> e <image filename> 
+To encrypt: ./aes-image <string to encrypt> e <image filename> 
 
-To decrypt: ./a.out <string to decrypt> d <image filename>
+To decrypt: ./aes-image <string to decrypt> d <image filename>
