@@ -1,5 +1,5 @@
 # encrypted-message-image
-This is a C program that will AES-128 encode a string, and encode it into a PNG image file (when it's done).
+This is a C program that will AES-128 encode a string, and embed it into a PNG image file. The key is currently fixed, next on my agenda is generating a key and embedding it in a searate file.
 
 To compile: make
 
