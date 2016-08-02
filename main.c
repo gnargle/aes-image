@@ -131,6 +131,7 @@ int main(int argc, char *argv[]){
         printf("Usage: Encrypt mode: <encryption string>, e, <filename> \n");
         printf("Decrypt mode: d, <filename>\n");
     }
+    return 0;
 }
 
 
