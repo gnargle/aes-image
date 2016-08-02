@@ -39,21 +39,16 @@ int main(int argc, char *argv[]){
             char* out = (char*)calloc(1,4*16*iter);
 
             for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
-                phex(enc + i * (uint8_t) 16);
-            };
-
-            printf("\n");
-
-            for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
                 char* temp = (char*) calloc(1,65);
-                printf("here2\n");
                 phex_to_string(enc + i * (uint8_t) 16,temp);
-                printf("here3\n");
                 strncat(out, temp, strlen(temp));
                 
             };
-            printf("out = %s\n",out);
+            printf("%s\n",out);
             printf("\n");
+
+            //out matches up to whats printed out but for some reason
+            //inserts a weird junk character in the first position of temp
             
 
             // Preliminary image manipulation work

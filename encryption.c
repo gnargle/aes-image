@@ -21,7 +21,12 @@ void phex_to_string(uint8_t* str, char* out)
     for(i = 0; i < 16; ++i){
         char temp[4] = "";
         snprintf(temp,4,"%.2x", str[i]);
-        strncat(fullstring,temp,4);
+        if (i==0){
+            strncpy(fullstring,temp,4);
+        }
+        else{
+            strncat(fullstring,temp,4);
+        } // this fixes the weird extra character issue
     }
     strncpy(out,fullstring,sizeof(fullstring));
 }
