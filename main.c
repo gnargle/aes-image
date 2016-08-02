@@ -45,6 +45,9 @@ int main(int argc, char *argv[]){
                 
             };
             printf("%s\n",out);
+            printf("%c",out[4]); 
+            // prints out a single character of out
+            // so I can remember what I'm doing
             printf("\n");
 
             //out matches up to whats printed out but for some reason
