@@ -11,6 +11,99 @@
 
 #define NUM_OF_ARGS 4
 
+int offsetmult = 11;
+
+void encryption_mode(char* filename, int argc, char *argv[]){
+    //get input from cmd line into a readable format for the encryption alg
+            
+    uint8_t input_enc[strlen(argv[1])];
+    sprintf(input_enc,"%s",argv[1]);
+
+    int i;
+    //work out how many 16 character cycles must be done on the
+    //input string
+
+    int iter = find_iterations(input_enc);
+    printf("encrypted:\n");
+
+    //encrypt the string using library
+
+    uint8_t enc[strlen(input_enc)];
+    encrypt_str(input_enc,enc, iter);
+
+    //print the encrypted string out in hex, for the user to copy
+
+    char* out = (char*)calloc(1,4*16*iter);
+
+    for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
+        char* temp = (char*) calloc(1,65);
+        phex_to_string(enc + i * (uint8_t) 16,temp);
+        strncat(out, temp, strlen(temp));
+                
+    };
+    printf("%s\n",out);
+    printf("%c",out[4]); 
+    // prints out a single character of out
+    // so I can remember what I'm doing
+    printf("\n");
+
+    //we now have a hex string. Each character is one hex digit.
+    //we need to embed each digit in an RGB cluster. Do we want to
+    //do it singularly or two at a time? Maybe try the former first 
+    //because it should be easier, see how it looks
+            
+
+    // Preliminary image manipulation work
+    // loads in an image by filename and outputs it as a png
+    int img_x = 0;
+    int img_y = 0;
+    int img_comp = 0;
+    char *data = stbi_load(filename,&img_x,&img_y,&img_comp,0);
+    if (img_x != 0){
+        printf("image load success\n");
+        printf("image width = %i\n",img_x);
+        printf("image_height = %i\n",img_y);
+        printf("image components = %i\n",img_comp);
+        printf("RGB of first pixel: %i,%i,%i\n", data[0],data[1],data[2]);
+        printf("RGB of second pixel: %i,%i,%i\n", data[3],data[4],data[5]);
+        int offset = rand()%126+2; // +2 so we never get a 0/overwrite the metadata pixels
+        data[0] = offset;
+        data[1] = iter; 
+        // embed the number of iterations in the image. This * 16 should give us 
+        // a rough value of how many pixels we need to read. If we encode the nullbyte
+        // as well we'll ensure we get an end-of-string, so we don't need to worry about 
+        // any data read in after that.
+
+        printf("RGB of offset & length pixel: %i,%i,%i\n", data[0],data[1],data[2]);
+        // this for embeds the encoded data in the image, every offset*offsetmult pixels.
+        for (i = 1; i <strlen(out)+1;i++){
+            // the strlen()+1 ensures we grab the null byte as well
+            data[i*offset*offsetmult] = out[i];
+            //printf("data of %ith pixel after encode: %i\n",i*offset*offsetmult, data[i*offset*offsetmult]);
+        }
+                
+        stbi_write_png("out.png",img_x,img_y,img_comp,data,img_x*img_comp);
+    }
+
+}
+
+void decryption_mode(char* filename, int argc, char *argv[]){
+    uint8_t* input_enc = NULL;
+    input_enc = (uint8_t*)calloc(1,strlen(argv[1]));
+    strcpy(input_enc, argv[1]);
+
+    //convert hex string to ascii. I have no idea why this works now
+    //when it didn't before 
+
+    uint8_t* asc = (uint8_t*)calloc(1,strlen(input_enc));
+    convert_hex_str_to_asc(input_enc, asc);
+    int iter = find_iterations(input_enc);
+    uint8_t* dec = (uint8_t*)calloc(1,strlen(input_enc)); 
+    decrypt_str(asc,dec,iter);
+
+    printf("decrypted string:\n%s\n",dec);
+}
+
 int main(int argc, char *argv[]){
     srand(time(NULL));
     if (argc == NUM_OF_ARGS){
@@ -19,90 +112,10 @@ int main(int argc, char *argv[]){
         char filename[strlen(argv[3])];
         sprintf(filename, "%s", argv[3]);
         if (mode[0] == 'e'){
-
-            //get input from cmd line into a readable format for the encryption alg
-            
-            uint8_t input_enc[strlen(argv[1])];
-            sprintf(input_enc,"%s",argv[1]);
-
-            int i;
-            //work out how many 16 character cycles must be done on the
-            //input string
-
-            int iter = find_iterations(input_enc);
-            printf("encrypted:\n");
-
-            //encrypt the string using library
-
-            uint8_t enc[strlen(input_enc)];
-            encrypt_str(input_enc,enc, iter);
-
-            //print the encrypted string out in hex, for the user to copy
-
-            char* out = (char*)calloc(1,4*16*iter);
-
-            for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
-                char* temp = (char*) calloc(1,65);
-                phex_to_string(enc + i * (uint8_t) 16,temp);
-                strncat(out, temp, strlen(temp));
-                
-            };
-            printf("%s\n",out);
-            printf("%c",out[4]); 
-            // prints out a single character of out
-            // so I can remember what I'm doing
-            printf("\n");
-
-            //we now have a hex string. Each character is one hex digit.
-            //we need to embed each digit in an RGB cluster. Do we want to
-            //do it singularly or two at a time? Maybe try the former first 
-            //because it should be easier, see how it looks
-            
-
-            // Preliminary image manipulation work
-            // loads in an image by filename and outputs it as a png
-            // TODO: embed the encoded hex characters
-            int img_x = 0;
-            int img_y = 0;
-            int img_comp = 0;
-            char *data = stbi_load(filename,&img_x,&img_y,&img_comp,0);
-            if (img_x != 0){
-                printf("image load success\n");
-                printf("image width = %i\n",img_x);
-                printf("image_height = %i\n",img_y);
-                printf("image components = %i\n",img_comp);
-                printf("RGB of first pixel: %i,%i,%i\n", data[0],data[1],data[2]);
-                printf("RGB of second pixel: %i,%i,%i\n", data[3],data[4],data[5]);
-                int offset = rand()%128;
-                data[0] = offset;
-                for (i = 1; i <strlen(out)+1;i++){
-                    data[i*offset] = out[i];
-                }
-                printf("RGB of first pixel after encode: %i,%i,%i\n", data[0],data[1],data[2]);
-                stbi_write_png("out.png",img_x,img_y,img_comp,data,img_x*img_comp);
-            }
-
-            // there's a couple of options to encode the shex string. 
-            // Either we do it per character (which will be messy on the decode end)
-            // or we do it per byte (which means 2 characters at this end, but that shouldn't)
-            // be too bad using %.2x
+            encryption_mode(filename, argc, argv);
         }
-
         else if (mode[0] == 'd'){
-            uint8_t* input_enc = NULL;
-            input_enc = (uint8_t*)calloc(1,strlen(argv[1]));
-            strcpy(input_enc, argv[1]);
-
-            //convert hex string to ascii. I have no idea why this works now
-            //when it didn't before 
-
-            uint8_t* asc = (uint8_t*)calloc(1,strlen(input_enc));
-            convert_hex_str_to_asc(input_enc, asc);
-            int iter = find_iterations(input_enc);
-            uint8_t* dec = (uint8_t*)calloc(1,strlen(input_enc)); 
-            decrypt_str(asc,dec,iter);
-
-            printf("decrypted string:\n%s\n",dec);
+            decryption_mode(filename, argc, argv);
         }
         else{
             printf("Could not understand arguments.\nUsage: ./a.out <string> \"d\" <decrypt mode> \"e\" <encrypt mode>\n");
