@@ -9,7 +9,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define NUM_OF_ARGS 4
+#define NUM_OF_ARGS_enc 4
+#define NUM_OF_ARGS_dec 3
 
 int offsetmult = 11;
 
@@ -120,7 +121,7 @@ void decryption_mode(char* filename, int argc, char *argv[]){
 
 int main(int argc, char *argv[]){
     srand(time(NULL));
-    if (argc == NUM_OF_ARGS){
+    if (argc == NUM_OF_ARGS_enc){
         uint8_t mode[1];
         sprintf(mode,"%s",argv[2]);
         char filename[strlen(argv[3])];
@@ -128,16 +129,21 @@ int main(int argc, char *argv[]){
         if (mode[0] == 'e'){
             encryption_mode(filename, argc, argv);
         }
-        else if (mode[0] == 'd'){
+    }
+    else if (argc == NUM_OF_ARGS_dec){
+        uint8_t mode[1];
+        sprintf(mode,"%s",argv[1]);
+        char filename[strlen(argv[2])];
+        sprintf(filename, "%s", argv[2]);
+        if (mode[0] == 'd'){
             decryption_mode(filename, argc, argv);
         }
-        else{
-            printf("Could not understand arguments.\nUsage: ./a.out <string> \"d\" <decrypt mode> \"e\" <encrypt mode>\n");
-        }
-        return 0;
     }
-    else if (argc > NUM_OF_ARGS) printf("Too many arguments.\n");
-    else printf("Usage: <encryption string>, mode, <filename> \n");
+    else if (argc > NUM_OF_ARGS_enc) printf("Too many arguments.\n");
+    else {
+        printf("Usage: Encrypt mode: <encryption string>, e, <filename> \n");
+        printf("Decrypt mode: d, <filename>\n");
+    }
 }
 
 
