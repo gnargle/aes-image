@@ -14,6 +14,18 @@ void phex(uint8_t* str)
     //printf("\n");
 }
 
+void phex_to_string(uint8_t* str, char* out)
+{
+    unsigned char i;
+    char fullstring[65];
+    for(i = 0; i < 16; ++i){
+        char temp[4] = "";
+        snprintf(temp,4,"%.2x", str[i]);
+        strncat(fullstring,temp,4);
+    }
+    strncpy(out,fullstring,sizeof(fullstring));
+}
+
 void encrypt_str(uint8_t* str, uint8_t* out, int iter){
     uint8_t i;
     for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){

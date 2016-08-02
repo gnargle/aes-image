@@ -36,10 +36,25 @@ int main(int argc, char *argv[]){
 
             //print the encrypted string out in hex, for the user to copy
 
+            char* out = (char*)calloc(1,4*16*iter);
+
             for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
                 phex(enc + i * (uint8_t) 16);
-            }
+            };
+
             printf("\n");
+
+            for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
+                char* temp = (char*) calloc(1,65);
+                printf("here2\n");
+                phex_to_string(enc + i * (uint8_t) 16,temp);
+                printf("here3\n");
+                strncat(out, temp, strlen(temp));
+                
+            };
+            printf("out = %s\n",out);
+            printf("\n");
+            
 
             // Preliminary image manipulation work
             // loads in an image by filename and outputs it as a png
