@@ -42,7 +42,7 @@ void encryption_mode(char* filename, int argc, char *argv[]){
                 
     };
     printf("%s\n",out);
-    printf("%c",out[4]); 
+    //printf("%c",out[4]); 
     // prints out a single character of out
     // so I can remember what I'm doing
     printf("\n");
@@ -61,12 +61,7 @@ void encryption_mode(char* filename, int argc, char *argv[]){
     char *data = stbi_load(filename,&img_x,&img_y,&img_comp,0);
     if (img_x != 0){
         printf("image load success\n");
-        printf("image width = %i\n",img_x);
-        printf("image_height = %i\n",img_y);
-        printf("image components = %i\n",img_comp);
-        printf("RGB of first pixel: %i,%i,%i\n", data[0],data[1],data[2]);
-        printf("RGB of second pixel: %i,%i,%i\n", data[3],data[4],data[5]);
-        int offset = rand()%126+2; // +2 so we never get a 0/overwrite the metadata pixels
+        int offset = rand()%126+2; // +2 so we never get a 0/overwrite the metadata pixel
         data[0] = offset;
         data[1] = iter; 
         // embed the number of iterations in the image. This * 16 should give us 
@@ -78,7 +73,7 @@ void encryption_mode(char* filename, int argc, char *argv[]){
         // this for embeds the encoded data in the image, every offset*offsetmult pixels.
         for (i = 1; i <strlen(out)+1;i++){
             // the strlen()+1 ensures we grab the null byte as well
-            data[i*offset*offsetmult] = out[i];
+            data[i*offset*offsetmult] = out[i-1];
             //printf("data of %ith pixel after encode: %i\n",i*offset*offsetmult, data[i*offset*offsetmult]);
         }
                 
@@ -88,20 +83,39 @@ void encryption_mode(char* filename, int argc, char *argv[]){
 }
 
 void decryption_mode(char* filename, int argc, char *argv[]){
-    uint8_t* input_enc = NULL;
-    input_enc = (uint8_t*)calloc(1,strlen(argv[1]));
-    strcpy(input_enc, argv[1]);
+    //uint8_t* input_enc = NULL;
+    //input_enc = (uint8_t*)calloc(1,strlen(argv[1]));
+    //strcpy(input_enc, argv[1]);
 
-    //convert hex string to ascii. I have no idea why this works now
-    //when it didn't before 
+    int img_x = 0;
+    int img_y = 0;
+    int img_comp = 0;
+    char *data = stbi_load(filename,&img_x,&img_y,&img_comp,0);
+    if (img_x != 0){
+        printf("image load success\n");
+        printf("RGB of first pixel: %i,%i,%i\n", data[0],data[1],data[2]);
+        int offset = data[0];
+        int read_iter = data[1];
 
-    uint8_t* asc = (uint8_t*)calloc(1,strlen(input_enc));
-    convert_hex_str_to_asc(input_enc, asc);
-    int iter = find_iterations(input_enc);
-    uint8_t* dec = (uint8_t*)calloc(1,strlen(input_enc)); 
-    decrypt_str(asc,dec,iter);
+        char* enc = (char*)calloc(1,4*16*read_iter);
+        int i;
+        for (i = 1; i <4*16*read_iter+1;i++){ 
+            enc[i-1] = data[i*offset*offsetmult];
+        }
+        printf("enc = %s\n",enc);
+        //convert hex string to ascii. I have no idea why this works now
+        //when it didn't before 
 
-    printf("decrypted string:\n%s\n",dec);
+        uint8_t* asc = (uint8_t*)calloc(1,strlen(enc));
+        convert_hex_str_to_asc(enc, asc);
+        int iter = find_iterations(enc);
+        uint8_t* dec = (uint8_t*)calloc(1,strlen(enc)); 
+        decrypt_str(asc,dec,iter);
+
+        printf("decrypted string:\n%s\n",dec);
+    }
+
+    
 }
 
 int main(int argc, char *argv[]){
