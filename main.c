@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #include <string.h>
 #include "encryption.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -10,6 +12,7 @@
 #define NUM_OF_ARGS 4
 
 int main(int argc, char *argv[]){
+    srand(time(NULL));
     if (argc == NUM_OF_ARGS){
         uint8_t mode[1];
         sprintf(mode,"%s",argv[2]);
@@ -50,8 +53,10 @@ int main(int argc, char *argv[]){
             // so I can remember what I'm doing
             printf("\n");
 
-            //out matches up to whats printed out but for some reason
-            //inserts a weird junk character in the first position of temp
+            //we now have a hex string. Each character is one hex digit.
+            //we need to embed each digit in an RGB cluster. Do we want to
+            //do it singularly or two at a time? Maybe try the former first 
+            //because it should be easier, see how it looks
             
 
             // Preliminary image manipulation work
@@ -67,6 +72,13 @@ int main(int argc, char *argv[]){
                 printf("image_height = %i\n",img_y);
                 printf("image components = %i\n",img_comp);
                 printf("RGB of first pixel: %i,%i,%i\n", data[0],data[1],data[2]);
+                printf("RGB of second pixel: %i,%i,%i\n", data[3],data[4],data[5]);
+                int offset = rand()%128;
+                data[0] = offset;
+                for (i = 1; i <strlen(out)+1;i++){
+                    data[i*offset] = out[i];
+                }
+                printf("RGB of first pixel after encode: %i,%i,%i\n", data[0],data[1],data[2]);
                 stbi_write_png("out.png",img_x,img_y,img_comp,data,img_x*img_comp);
             }
 
