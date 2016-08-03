@@ -99,7 +99,7 @@ void encryption_mode(char* filename, char* filename_key, int argc, char *argv[])
 
         data[0] = offset;
         data[1] = iter; 
-        
+
         // embed the number of iterations in the image. This * 16 should give us 
         // a rough value of how many pixels we need to read. If we encode the nullbyte
         // as well we'll ensure we get an end-of-string, so we don't need to worry about 
@@ -136,7 +136,7 @@ void decryption_mode(char* filename, char* filename_key, int argc, char *argv[])
         int offset = data[0];
         int read_iter = data[1];
 
-        char* enc = (char*)calloc(1,4*16*read_iter);
+        char* enc = (char*)calloc(1,4*16*read_iter+1);
         int i;
         for (i = 1; i <4*16*read_iter+1;i++){ 
             enc[i-1] = data[i*offset*offsetmult];
@@ -144,10 +144,10 @@ void decryption_mode(char* filename, char* filename_key, int argc, char *argv[])
         //convert hex string to ascii. I have no idea why this works now
         //when it didn't before 
 
-        uint8_t* asc = (uint8_t*)calloc(1,strlen(enc));
+        uint8_t* asc = (uint8_t*)calloc(1,strlen(enc)+1);
         convert_hex_str_to_asc(enc, asc);
         int iter = find_iterations(enc);
-        uint8_t* dec = (uint8_t*)calloc(1,strlen(enc)); 
+        uint8_t* dec = (uint8_t*)calloc(1,strlen(enc)+1); 
         decrypt_str(asc,dec,iter, key);
 
         printf("decrypted string:\n%s\n",dec);
@@ -174,7 +174,6 @@ void keygen(char* filename, char* key, int keylength){
     int img_y = 0;
     int img_comp = 0;
     char *data = stbi_load(filename,&img_x,&img_y,&img_comp,0);
-    //why won't this load?
     if (img_x != 0){
         int i;
         for (i = 1; i < keylength+1;i++){ 
