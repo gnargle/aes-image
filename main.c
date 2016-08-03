@@ -37,7 +37,7 @@ void encryption_mode(char* filename, int argc, char *argv[]){
         char* temp = (char*) calloc(1,65);
         phex_to_string(enc + i * (uint8_t) 16,temp);
         strncat(out, temp, strlen(temp));
-                
+        free(temp);     
     };
             
 
@@ -69,6 +69,8 @@ void encryption_mode(char* filename, int argc, char *argv[]){
     else{
         printf("image load failed, aborting...\n");
     }
+    free(data);
+    free(out);
 
 }
 
@@ -98,10 +100,14 @@ void decryption_mode(char* filename, int argc, char *argv[]){
         decrypt_str(asc,dec,iter);
 
         printf("decrypted string:\n%s\n",dec);
+        free(enc);
+        free(asc);
+        //free(dec);
     }
     else{
         printf("image load failed, aborting...\n");
     }
+    free(data);
 
     
 }
