@@ -81,11 +81,11 @@ void encryption_mode(char* filename, char* filename_key, int argc, char *argv[])
         char* temp = (char*) calloc(1,65);
         phex_to_string(enc + i * (uint8_t) 16,temp);
         strncat(out, temp, strlen(temp));
-        //free(temp);     
+        //free(temp);   // for now this is commented as it crashes the program on windows  
     };
             
 
-    // Preliminary image manipulation work
+    // Image manipulation work
     // loads in an image by filename and outputs it as a png
     int img_x = 0;
     int img_y = 0;
@@ -94,8 +94,12 @@ void encryption_mode(char* filename, char* filename_key, int argc, char *argv[])
     if (img_x != 0){
         printf("image load success\n");
         int offset = rand()%126+2; // +2 so we never get a 0/overwrite the metadata pixel
+        //RGB is signed so we use %126+2 to get between 1 and 127 
+        //any greater than that would turn negative, which would break the offsetting
+
         data[0] = offset;
         data[1] = iter; 
+        
         // embed the number of iterations in the image. This * 16 should give us 
         // a rough value of how many pixels we need to read. If we encode the nullbyte
         // as well we'll ensure we get an end-of-string, so we don't need to worry about 
@@ -180,6 +184,7 @@ void keygen(char* filename, char* key, int keylength){
     }
     else{
         printf("failed to load key image, aborting\n");
+        free(data);
         exit(EXIT_FAILURE);
     }
 }
