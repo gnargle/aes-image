@@ -3,7 +3,9 @@ This is a C library that will AES-128 encrypt a string, and embed it into a PNG 
 
 # API usage:
 ```#include "encryption.h"
+
 encryption_mode(filename_to_save_to, filename_of_key_image, string_to_encode (in uint8_t format preferably))
+
 decryption_mode(filename_to_read_from, filename_of_key_image)```
 
 To compile test program:
