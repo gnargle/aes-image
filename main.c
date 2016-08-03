@@ -12,7 +12,39 @@
 #define NUM_OF_ARGS_enc 4
 #define NUM_OF_ARGS_dec 3
 
+void encryption_mode(char* filename, int argc, char *argv[]);
+
+void decryption_mode(char* filename, int argc, char *argv[]);
+
 int offsetmult = 11;
+
+int main(int argc, char *argv[]){
+    srand(time(NULL));
+    if (argc == NUM_OF_ARGS_enc){
+        uint8_t mode[1];
+        sprintf(mode,"%s",argv[2]);
+        char filename[strlen(argv[3])];
+        sprintf(filename, "%s", argv[3]);
+        if (mode[0] == 'e'){
+            encryption_mode(filename, argc, argv);
+        }
+    }
+    else if (argc == NUM_OF_ARGS_dec){
+        uint8_t mode[1];
+        sprintf(mode,"%s",argv[1]);
+        char filename[strlen(argv[2])];
+        sprintf(filename, "%s", argv[2]);
+        if (mode[0] == 'd'){
+            decryption_mode(filename, argc, argv);
+        }
+    }
+    else if (argc > NUM_OF_ARGS_enc) printf("Too many arguments.\n");
+    else {
+        printf("Usage: Encrypt mode: <encryption string>, e, <filename> \n");
+        printf("Decrypt mode: d, <filename>\n");
+    }
+    return 0;
+}
 
 void encryption_mode(char* filename, int argc, char *argv[]){
     //get input from cmd line into a readable format for the encryption alg
@@ -111,35 +143,6 @@ void decryption_mode(char* filename, int argc, char *argv[]){
 
     
 }
-
-int main(int argc, char *argv[]){
-    srand(time(NULL));
-    if (argc == NUM_OF_ARGS_enc){
-        uint8_t mode[1];
-        sprintf(mode,"%s",argv[2]);
-        char filename[strlen(argv[3])];
-        sprintf(filename, "%s", argv[3]);
-        if (mode[0] == 'e'){
-            encryption_mode(filename, argc, argv);
-        }
-    }
-    else if (argc == NUM_OF_ARGS_dec){
-        uint8_t mode[1];
-        sprintf(mode,"%s",argv[1]);
-        char filename[strlen(argv[2])];
-        sprintf(filename, "%s", argv[2]);
-        if (mode[0] == 'd'){
-            decryption_mode(filename, argc, argv);
-        }
-    }
-    else if (argc > NUM_OF_ARGS_enc) printf("Too many arguments.\n");
-    else {
-        printf("Usage: Encrypt mode: <encryption string>, e, <filename> \n");
-        printf("Decrypt mode: d, <filename>\n");
-    }
-    return 0;
-}
-
 
 /*
     This project wuld have been impossible without two wonderful open-source libraries:
