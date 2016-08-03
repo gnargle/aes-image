@@ -4,7 +4,7 @@ Included is an example program that simply uses the api as above.
 
 # API usage:
 ```C
-#include "encryption.h"
+#include "aes-image.h"
 encryption_mode(filename_to_save_to, filename_of_key_image, string_to_encode (in uint8_t format preferably))
 decryption_mode(filename_to_read_from, filename_of_key_image)
 ```
