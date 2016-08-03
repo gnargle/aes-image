@@ -144,6 +144,7 @@ void decryption_mode(char* filename, char* filename_key, int argc, char *argv[])
         //convert hex string to ascii. I have no idea why this works now
         //when it didn't before 
 
+        //+1 in following callocs necessary to avoid windows crash
         uint8_t* asc = (uint8_t*)calloc(1,strlen(enc)+1);
         convert_hex_str_to_asc(enc, asc);
         int iter = find_iterations(enc);
