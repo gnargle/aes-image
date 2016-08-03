@@ -9,33 +9,40 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define NUM_OF_ARGS_enc 4
-#define NUM_OF_ARGS_dec 3
+#define NUM_OF_ARGS_enc 5
+#define NUM_OF_ARGS_dec 4
 
-void encryption_mode(char* filename, int argc, char *argv[]);
+void encryption_mode(char* filename, char* filename_key, int argc, char *argv[]);
 
-void decryption_mode(char* filename, int argc, char *argv[]);
+void decryption_mode(char* filename, char* filename_key, int argc, char *argv[]);
+
+void keygen(char*filename, char* key, int keylength);
 
 int offsetmult = 11;
+int keylength = 16;
 
 int main(int argc, char *argv[]){
     srand(time(NULL));
     if (argc == NUM_OF_ARGS_enc){
         uint8_t mode[1];
         sprintf(mode,"%s",argv[2]);
-        char filename[strlen(argv[3])];
-        sprintf(filename, "%s", argv[3]);
+        char filename_img[strlen(argv[3])];
+        sprintf(filename_img, "%s", argv[3]);
+        char filename_key[strlen(argv[4])];
+        sprintf(filename_key, "%s", argv[4]);
         if (mode[0] == 'e'){
-            encryption_mode(filename, argc, argv);
+            encryption_mode(filename_img, filename_key, argc, argv);
         }
     }
     else if (argc == NUM_OF_ARGS_dec){
         uint8_t mode[1];
         sprintf(mode,"%s",argv[1]);
-        char filename[strlen(argv[2])];
-        sprintf(filename, "%s", argv[2]);
+        char filename_img[strlen(argv[2])];
+        sprintf(filename_img, "%s", argv[2]);
+        char filename_key[strlen(argv[3])];
+        sprintf(filename_key, "%s", argv[3]);
         if (mode[0] == 'd'){
-            decryption_mode(filename, argc, argv);
+            decryption_mode(filename_img, filename_key, argc, argv);
         }
     }
     else if (argc > NUM_OF_ARGS_enc) printf("Too many arguments.\n");
@@ -46,7 +53,12 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-void encryption_mode(char* filename, int argc, char *argv[]){
+void encryption_mode(char* filename, char* filename_key, int argc, char *argv[]){
+    //first get the key from the key image.
+    uint8_t* key = (uint8_t*) calloc(1,16);
+    keygen(filename_key, key, keylength);
+
+
     //get input from cmd line into a readable format for the encryption alg
             
     uint8_t input_enc[strlen(argv[1])];
@@ -61,7 +73,7 @@ void encryption_mode(char* filename, int argc, char *argv[]){
     //encrypt the string using library
 
     uint8_t enc[strlen(input_enc)];
-    encrypt_str(input_enc,enc, iter);
+    encrypt_str(input_enc,enc, iter, key);
 
     char* out = (char*)calloc(1,4*16*iter);
 
@@ -106,7 +118,10 @@ void encryption_mode(char* filename, int argc, char *argv[]){
 
 }
 
-void decryption_mode(char* filename, int argc, char *argv[]){
+void decryption_mode(char* filename, char* filename_key, int argc, char *argv[]){
+
+    uint8_t* key = (uint8_t*) calloc(1,16);
+    keygen(filename_key, key, keylength);
 
     int img_x = 0;
     int img_y = 0;
@@ -129,7 +144,7 @@ void decryption_mode(char* filename, int argc, char *argv[]){
         convert_hex_str_to_asc(enc, asc);
         int iter = find_iterations(enc);
         uint8_t* dec = (uint8_t*)calloc(1,strlen(enc)); 
-        decrypt_str(asc,dec,iter);
+        decrypt_str(asc,dec,iter, key);
 
         printf("decrypted string:\n%s\n",dec);
         free(enc);
@@ -139,9 +154,34 @@ void decryption_mode(char* filename, int argc, char *argv[]){
     else{
         printf("image load failed, aborting...\n");
     }
-    free(data);
+    free(data);    
+}
 
-    
+void keygen(char* filename, char* key, int keylength){
+    /*
+    just thinking about key generation - what if we used the first x RGB values from an image? 
+    That way when you send it, it's not suspicious because the image is 
+    *exactly the same* as another downloaded off the internet or whatever. 
+    Only thinking is, if you send an image via facebook and it gets downloaded again, will that
+    corrupt the key due to JPG degradation? Maybe we need to ensure that it's a png?
+    We'll see.
+    */
+    int img_x = 0;
+    int img_y = 0;
+    int img_comp = 0;
+    char *data = stbi_load(filename,&img_x,&img_y,&img_comp,0);
+    //why won't this load?
+    if (img_x != 0){
+        int i;
+        for (i = 1; i < keylength+1;i++){ 
+            key[i-1] = (uint8_t)data[i];
+        }
+        free(data);
+    }
+    else{
+        printf("failed to load key image, aborting\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 /*

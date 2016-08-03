@@ -4,7 +4,7 @@
 #include "aes.h"
 #include "encryption.h"
 
-const uint8_t key[4] = {0xef,0x45,0x3f,0xa6};
+//uint8_t key[4] = {0xef,0x45,0x3f,0xa6};
 
 void phex(uint8_t* str)
 {
@@ -31,14 +31,14 @@ void phex_to_string(uint8_t* str, char* out)
     strncpy(out,fullstring,sizeof(fullstring));
 }
 
-void encrypt_str(uint8_t* str, uint8_t* out, int iter){
+void encrypt_str(uint8_t* str, uint8_t* out, int iter, uint8_t* key){
     uint8_t i;
     for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
         AES128_ECB_encrypt(str + (i*16),key,out + (i*16));
     }
 }
 
-void decrypt_str(uint8_t* str, uint8_t* out, int iter){
+void decrypt_str(uint8_t* str, uint8_t* out, int iter, uint8_t* key){
     uint8_t i;
     for (i = (uint8_t) 0; i <= (uint8_t) iter; ++i){
         AES128_ECB_decrypt(str + (i*16),key,out + (i*16)); 
