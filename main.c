@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
-#include "encryption.h"
+#include "aes-image.h"
 
 #define NUM_OF_ARGS_enc 5
 #define NUM_OF_ARGS_dec 4
