@@ -17,4 +17,10 @@ int hex_to_ascii(char c, char d);
 
 void convert_hex_str_to_asc(char* str, char* done);
 
+void encryption_mode(char* filename, char* filename_key, uint8_t* input_enc);
+
+void decryption_mode(char* filename, char* filename_key);
+
+void keygen(char*filename, char* key, int keylength);
+
 #endif //_ENCRYPTION_H
