@@ -37,7 +37,7 @@ void encryption_mode(char* filename, int argc, char *argv[]){
         char* temp = (char*) calloc(1,65);
         phex_to_string(enc + i * (uint8_t) 16,temp);
         strncat(out, temp, strlen(temp));
-        free(temp);     
+        //free(temp);     
     };
             
 
