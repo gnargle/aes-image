@@ -7,3 +7,9 @@ make windows - do what they say on the tin.
 
 Encryption: ./aes-image "encryption string" e "filename to encrypt into" "key filename"
 Decryption ./aes-image d "filename with encrypted message" "key filename"
+
+Three third party libraries are used and included (according to their licenses):
+
+* tiny-AES128-C: https://github.com/kokke/tiny-AES128-C
+
+* Scott's Toolbox image.h and image_write.h: https://github.com/nothings/stb
