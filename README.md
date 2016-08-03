@@ -1,5 +1,6 @@
 # encrypted-message-image
 This is a C library that will AES-128 encrypt a string, and embed it into a PNG image file. The key is generated from another image file.
+Included is an example program that simply uses the api as above.
 
 # API usage:
 ```C
@@ -8,6 +9,10 @@ encryption_mode(filename_to_save_to, filename_of_key_image, string_to_encode (in
 decryption_mode(filename_to_read_from, filename_of_key_image)
 ```
 
+
+# Program usage:
+
+
 To compile test program:
 make all - compiles for both windows and linux
 
@@ -15,7 +20,6 @@ make linux
 
 make windows - do what they say on the tin.
 
-# Program usage:
 * Encryption: ./aes-image "encryption string" e "filename to encrypt into" "key filename"
 * Decryption ./aes-image d "filename with encrypted message" "key filename"
 
