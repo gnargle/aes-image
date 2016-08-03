@@ -101,7 +101,7 @@ void decryption_mode(char* filename, int argc, char *argv[]){
 
         printf("decrypted string:\n%s\n",dec);
         free(enc);
-        free(asc);
+        //free(asc);
         //free(dec);
     }
     else{
