@@ -47,8 +47,8 @@ int main(int argc, char *argv[]){
     }
     else if (argc > NUM_OF_ARGS_enc) printf("Too many arguments.\n");
     else {
-        printf("Usage: Encrypt mode: <encryption string>, e, <filename> \n");
-        printf("Decrypt mode: d, <filename>\n");
+        printf("Usage: Encrypt mode: <encryption string>, e, <filename to encode in>, <key filename> \n");
+        printf("Decrypt mode: d, <filename with message in>, <key filename>\n");
     }
     return 0;
 }
