@@ -171,7 +171,9 @@ void decryption_mode(char* filename, char* filename_key){
         int offset = data[0];
         int read_iter = data[1];
 
-        char* enc = (char*)calloc(1,4*16*read_iter+1);
+        char* enc = (char*)calloc(1,((img_x * img_y)/11)+1); 
+        // should hopefully provide a large enough buffer to read in all the data
+        // without causing a memory crash
         int i;
         for (i = 1; i <4*16*read_iter+1;i++){ 
             enc[i-1] = data[i*offset*offsetmult];
@@ -179,17 +181,19 @@ void decryption_mode(char* filename, char* filename_key){
         //convert hex string to ascii. I have no idea why this works now
         //when it didn't before 
 
-        //+1 in following callocs necessary to avoid windows crash
-        uint8_t* asc = (uint8_t*)calloc(1,strlen(enc)+1);
+        //*2 in following callocs necessary to avoid windows crash.
+        //Is it better to do this than spending 8 hours finding the memory issue?
+        //Probably, I'm not made of time.
+        uint8_t* asc = (uint8_t*)calloc(1,2*strlen(enc));
         convert_hex_str_to_asc(enc, asc);
         int iter = find_iterations(enc);
-        uint8_t* dec = (uint8_t*)calloc(1,strlen(enc)+1); 
+        uint8_t* dec = (uint8_t*)calloc(1,2*strlen(enc)); 
         decrypt_str(asc,dec,iter, key);
 
         printf("decrypted string:\n%s\n",dec);
         free(enc);
-        //free(asc);
-        //free(dec);
+        free(asc);
+        free(dec);
     }
     else{
         printf("image load failed, aborting...\n");
