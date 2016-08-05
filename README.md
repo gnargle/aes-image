@@ -20,6 +20,8 @@ make linux
 
 make windows - do what they say on the tin.
 
+Compiling for windows will fail if you do not have mingw for 32 bit windows installed.
+
 * Encryption: ./aes-image "encryption string" e "filename to encrypt into" "key filename"
 * Decryption ./aes-image d "filename with encrypted message" "key filename"
 
