@@ -94,10 +94,12 @@ void convert_hex_str_to_asc(char* str, char* done){
 	}
 }
 
-void encryption_mode(char* filename, char* filename_key, uint8_t* input_enc){
+int encryption_mode(char* filename, char* filename_key, uint8_t* input_enc){
     //first get the key from the key image.
     uint8_t* key = (uint8_t*) calloc(1,16);
-    keygen(filename_key, key, keylength);
+    if(keygen(filename_key, key, keylength)==1){
+        return 1;
+    }
 
     int i;
     //work out how many 16 character cycles must be done on the
@@ -148,19 +150,27 @@ void encryption_mode(char* filename, char* filename_key, uint8_t* input_enc){
                 
         stbi_write_png("out.png",img_x,img_y,img_comp,data,img_x*img_comp);
         printf("Image conversion success. Stored as out.png\n");
+        free(data);
+        free(out);
+        return 0;
     }
     else{
         printf("image load failed, aborting...\n");
+        free(data);
+        free(out);
+        return 1;
     }
-    free(data);
-    free(out);
+    
 
 }
 
-void decryption_mode(char* filename, char* filename_key){
+int decryption_mode(char* filename, char* filename_key){
+    //returns 0 if success, 1 if fail
 
     uint8_t* key = (uint8_t*) calloc(1,16);
-    keygen(filename_key, key, keylength);
+    if (keygen(filename_key, key, keylength)==1){
+        return 1;
+    }
 
     int img_x = 0;
     int img_y = 0;
@@ -194,14 +204,19 @@ void decryption_mode(char* filename, char* filename_key){
         free(enc);
         free(asc);
         free(dec);
+        free(data);
+        return 0;
     }
     else{
         printf("image load failed, aborting...\n");
+        free(data);
+        return 1;
     }
-    free(data);    
+        
 }
 
-void keygen(char* filename, char* key, int keylength){
+int keygen(char* filename, char* key, int keylength){
+    //keygen returns 0 if success, 1 if fail
     /*
     just thinking about key generation - what if we used the first x RGB values from an image? 
     That way when you send it, it's not suspicious because the image is 
@@ -220,10 +235,11 @@ void keygen(char* filename, char* key, int keylength){
             key[i-1] = (uint8_t)data[i];
         }
         free(data);
+        return 0;
     }
     else{
         printf("failed to load key image, aborting\n");
         free(data);
-        exit(EXIT_FAILURE);
+        return 1;
     }
 }
